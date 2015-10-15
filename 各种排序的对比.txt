@@ -1,0 +1,462 @@
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<time.h>
+#include<windows.h>
+#include<string.h>
+#define LEN 100
+#define MIN 100
+#define MAX 1101
+int _(void);
+void Show(void);
+void Switch(int array[], int len);
+void Srand(int array[], int len);
+void ShowSrand(int array[], int len);
+void ChoiceSort(int array[], int len);
+void InsertSort(int array[], int len);
+void BubbleSort(int array[], int len);
+int ComparisonSum(int Boolean_1, int Boolean_2);
+int MobileSum(int Boolean_1, int Boolean_2);
+void Merge(int array[], int temp[], int first, int mid, int last);
+void MergeSort(int array[], int temp[], int first, int last);
+void ShowMergeSort(int array[], int len);
+void Sort(int array[], int len);
+void SequentialSearch(int array[], int len, int key);
+void BinarySearch(int array[], int len, int key);
+void Find(int array[], int len);
+
+
+int main(int argc, char *argv[])
+{
+	int array[LEN] = {6, 202, 100, 301, 38, 8, 1};
+	Srand(array, LEN);
+	while(1)
+	{
+		system("cls");
+		system("color f");  // 运行到该处时，全屏文字变成亮白色 
+		Show();
+		Switch(array, LEN);
+	}
+	return EXIT_SUCCESS;
+}
+
+int _(void)    // 普通数据输入 
+{
+	char val[11] = {0};  				  // 把数组初始化为'\0' ，（非必要） 
+	int temp;
+	int key = 1; 
+	key = scanf("%[9-0]", val); 	      // 不能有空格 
+
+	while(key == 0 || getchar() != '\n')  // 利用返回值判断是否正确输入（读取失败返回0），如果不是读取失败，就判断是否有非法输入（前后关系不能乱） 
+	{
+		if(key == 0 || getchar() != '\n') // 空输入或非法输入时清除缓存（空输入时就不可能是非法输入） 
+		{
+			key = 1;
+			while(getchar() != '\n');
+		}
+		printf("\t输入错误，请重新输入：");
+		key = scanf("%[9-0]", val);
+	}
+	
+	temp = atoi(val);
+	return temp;
+}
+
+void Show(void)          // 主菜单显示 
+{
+	printf("\n\n\n\t\t   **************************************\n");
+	printf("\t\t   *  排序和查找：                      *\n");
+	printf("\t\t   *  随机生成-100到1000之间的100个数， *\n");
+	printf("\t\t   *  可选择以下操作：                  *\n");
+	printf("\t\t   *  1、重新生成随机数。               *\n");
+	printf("\t\t   *  2、输出未排序的随机数。           *\n");
+	printf("\t\t   *  3、各种排序的对比。               *\n"); 
+	printf("\t\t   *  4、无序查找与有序查找的对比。     *\n");
+	printf("\t\t   *  0、退出程序。                     *\n");
+	printf("\t\t   **************************************\n");
+	printf("\n\t################################################################\n\t请输入选项：");
+	return;
+}
+
+void Switch(int array[], int len)        // 主菜单选择 
+{
+	int val;
+	val = _();
+	switch(val)
+	{
+		case 0:
+				printf("\t请按任意键结束程序...");
+				getch(); 
+				exit(EXIT_SUCCESS);
+				
+		case 1:
+				Srand(array, len);
+				system("cls");
+				printf("\t\t\t------ 重新生产随机数 ------\n\n");
+				printf("\t重新生产随机数成功，请按任意键返回主菜单...");
+				getch(); 
+				return;
+
+		case 2:
+				system("cls");
+				printf("\t\t\t------ 输出未排序的随机数 ------\n\n");
+				ShowSrand(array, len);
+				printf("\n\t输出未排序的随机数成功，请按任意键返回主菜单...");
+				getch();
+				return;
+
+		case 3:
+				Sort(array, len);
+				getch();
+				return;
+
+		case 4:
+				Find(array, len);
+				getch();
+				return;
+				
+		default :
+				  printf("\t无该选项，请按任意键后重新输入...");
+			 	  getch();
+				  return;
+	}
+}
+
+void Srand(int array[], int len)  // 生成随机数 
+{
+	srand((unsigned)time(NULL));
+	for(int i = 0; i < len; ++i)
+	{
+		array[i] = rand() % MAX - MIN;
+	}
+	return;
+}
+
+void ShowSrand(int array[], int len)  // 输出未排序的随机数 
+{
+	for(int i = 0; i < len; ++i)
+	{
+		printf("\t%d\t",array[i]);
+	}
+	return;
+}
+
+void ChoiceSort(int array[], int len)  // 直接选择排序
+{
+	int val;
+	int min;
+	int comparison_sum = 0;
+	int mobile_sum = 0;
+	
+	for(int i = 0; i < len - 1; ++i)  		// 最后一趟前已经排好了，所以就不需要再排了 
+	{
+		min = i;							// 把第i个元素设为最小值 
+		for(int j = 1 + i; j < len; ++j)	// 前面已经进行了i趟，即i个元素已经排好，所以就不需要再排了 
+		{
+			++comparison_sum;
+			if(array[min] > array[j])  		// >表示升序 <表示降序
+			{
+				min = j;					// 如果i不是最小值，则替换成j（j是当前的最小值） 
+			}
+		}
+		
+		if(i != min) 						// 如果i是最小值，则不用替换 
+		{
+			++mobile_sum;
+			val = array[min];  				// val存放最小值 
+			array[min] = array[i]; 			// 把大值存放到后面的元素中 
+			array[i] = val;					// 把最小值存放到第i个元素中 
+		}
+	}
+	
+	printf("\t直接选择排序：比较次数为%d，移动次数为%d。\n", comparison_sum, mobile_sum);
+	for(int i = 0; i < len; ++i)
+	{
+		printf("\t%d\t",array[i]);
+	}
+	printf("\n");
+ 	return; 
+}
+
+void InsertSort(int array[], int len)  // 直接插入排序
+{
+	int j;
+	int val;
+	int comparison_sum = 0;
+	int mobile_sum = 0;
+	
+	for(int i = 1; i < len; ++i) 											// 从1开始（因为后面要减1） 
+	{
+		val = array[i]; 													// 设置临时值 
+		for(j = i; (j > 0) && ++comparison_sum && array[j-1] > val; --j)	// j初始化成i，如果循环条件不成立，下面array[j] = val还是自己
+											   								// j要大于0，因为下面j要减1；判断相邻的2个元素的大小 
+		{
+			++mobile_sum;
+			array[j] = array[j-1]; 											// 成立则覆盖后一个元素的值 
+		}
+		array[j] = val; 													// 把临时值放回数组 
+	}
+	
+	printf("\t直接插入排序：比较次数为%d，移动次数为%d。\n", comparison_sum, mobile_sum);
+	for(int i = 0; i < len; ++i)
+	{
+		printf("\t%d\t",array[i]);
+	}
+	printf("\n");
+	return;
+}
+
+void BubbleSort(int array[], int len)  // 冒泡排序
+{
+	int val;
+	int flag = 1; 										// 引入标志符 1为真，0为假 
+	int comparison_sum = 0;
+	int mobile_sum = 0;
+	
+	for (int i = 0; i < len - 1; ++i)  					// 最后一趟前已经排好了，所以就不需要再排了 
+	{
+		flag = 1;
+		for(int j = 0; j < len - 1 - i; ++j)			// 为了防止j+1越界，所以长度要减1；前面已经进行了i趟，即i个元素已经排好，所以就不需要再排了 
+		{
+			++comparison_sum;
+			if (array[j] > array[j+1])  				// >表示升序 <表示降序
+			{
+				val = array[j];
+				array[j] = array[j+1];
+				array[j+1] = val; 
+				flag = 0;
+				++mobile_sum;
+			}
+		}
+		
+		if(flag)										// 如果一趟排序没有数据进行交换说明后面的顺序已经是正确的，没必要再排序了
+		{
+			break;
+		}
+	}
+	
+	printf("\t冒泡排序：比较次数为%d，移动次数为%d。\n", comparison_sum, mobile_sum);
+	for(int i = 0; i < len; ++i)
+	{
+		printf("\t%d\t",array[i]);
+	}
+	printf("\n");
+	return;
+}
+
+int ComparisonSum(int Boolean_1, int Boolean_2)  // 归并排序的比较次数 
+{
+	static int comparison_sum = 0;
+	
+	if(Boolean_1)
+	{
+		++comparison_sum;
+	}
+	
+	if(Boolean_2)
+	{
+		comparison_sum = 0;
+	}
+	return comparison_sum;
+}
+
+int MobileSum(int Boolean_1, int Boolean_2)  // 归并排序的移动次数
+{
+	static int mobile_sum = 0;
+	
+	if(Boolean_1)
+	{
+		++mobile_sum;
+	}
+	
+	if(Boolean_2)
+	{
+		mobile_sum = 0;
+	}
+	return mobile_sum;
+}
+
+void Merge(int array[], int temp[], int first, int mid, int last) // 归并操作
+{
+    int i;
+	int j;
+	int k;
+	
+    for(i = mid + 1, j = first; first <= mid && i <= last; ++j)	 // first <= mid防止向前越界，i <= last防止向后越界
+    {
+    	ComparisonSum(1, 0);
+    	
+        if(array[first] < array[i]) 
+        {
+        	MobileSum(1, 0);
+            temp[j] = array[first++]; 
+        }
+        else
+        {
+        	MobileSum(1, 0);
+            temp[j] = array[i++];
+        }
+    }
+ 
+    if(first <= mid)								 // 拷贝剩余部分
+    {
+        for(k = 0; k <= mid - first; ++k)
+        {
+        	MobileSum(1, 0);
+            temp[j+k] = array[first+k];
+        }
+    }
+ 
+    if(i <= last)									 // 拷贝剩余部分 
+    {
+        for(k = 0; k <= last - i; ++k)
+        {
+        	MobileSum(1, 0);
+            temp[j+k] = array[i+k];
+        }
+    }
+}
+
+void MergeSort(int array[], int temp[], int first, int last) 
+{
+    int mid;
+    int val[LEN]; // 临时数组 
+    
+    if(first == last)
+    {
+        temp[first] = array[first];
+    }
+    else
+    {
+        mid = first + ((last - first) / 2);
+        MergeSort(array, val, first, mid);   	 // 对前半部分进行排序
+        MergeSort(array, val, mid + 1, last); 	 // 对后半部分进行排序
+        Merge(val, temp, first, mid, last);	 	 // 合并前后两部分
+    }
+}
+
+void ShowMergeSort(int array[], int len)   // 输出归并排序 
+{
+	printf("\t归并排序：比较次数为%d，移动次数为%d。\n", ComparisonSum(0, 0), MobileSum(0, 0));
+	for(int i = 0; i < len; ++i)
+	{
+		printf("\t%d\t", array[i]);
+	}
+	printf("\n");
+}
+
+void Sort(int array[], int len)   // 各种排序的对比 
+{
+	int temp_1[len];
+	int temp_2[len];
+	int temp_3[len];
+	int temp_4[len];
+	
+	memcpy(temp_1, array, sizeof(int) * len);
+	memcpy(temp_2, array, sizeof(int) * len);
+	memcpy(temp_3, array, sizeof(int) * len);
+	
+	ComparisonSum(0, 1);
+	MobileSum(0, 1);
+	
+	system("cls");
+	printf("\t\t\t------ 输出排序前与排序后的随机数 ------\n\n");
+	
+	printf("\t排序前：\n"); 
+	ShowSrand(array, len);
+	
+	printf("\n\n\t排序后：\n");
+	ChoiceSort(temp_1, len);
+	InsertSort(temp_2, len);
+	BubbleSort(temp_3, len);
+	MergeSort(array, temp_4, 0, len);
+	ShowMergeSort(temp_4, len);
+	
+	printf("\t输出排序前与排序后的随机数成功，请按任意键返回主菜单...");
+	return;
+}
+
+void SequentialSearch(int array[], int len, int key)  // 无序查找 
+{	
+	int i;
+	
+	for(i = 1; i <= len; ++i)
+	{
+		if(array[i-1] == key)
+		{
+			break;
+		}
+	}
+	
+	if(array[i-1] == key)
+	{
+		printf("\t查找成功！\n\t查找的数为%d，比较次数为%d。\n", key, i);
+	}
+	else
+	{
+		printf("\t查找失败，没有该数！\n\t查找的数为%d，比较次数为%d。\n", key, i - 1);
+	}
+	return;
+}
+
+void BinarySearch(int array[], int len, int key)  // 二分查找 
+{
+	int first = 0;
+	int i = 0;
+	int mid;
+	
+	while(first < len)
+	{
+		mid = first + ((len - first) / 2);  // 防止整数溢出 
+		
+		if(array[mid] == key)
+		{
+			++i;
+			break;
+		}
+		else if(array[mid] > key)
+		{
+			++i;
+			len = mid - 1;
+		}
+		else
+		{
+			++i;
+			first = mid + 1;
+		}
+	}
+	
+	if(array[mid] == key)
+	{
+		printf("\t查找成功！\n\t查找的数为%d，比较次数为%d。\n", key, i);
+	}
+	else
+	{
+		printf("\t查找失败，没有该数！\n\t查找的数为%d，比较次数为%d。\n", key, i);
+	}
+	return;
+}
+
+void Find(int array[], int len)  // 无序查找与有序查找的对比 
+{
+	int key;
+	int temp_1[len];
+	int temp_2[len];
+	
+	memcpy(temp_1, array, sizeof(int) * len);
+	
+	system("cls");
+	printf("\t\t\t------ 无序查找与有序查找 ------\n\n");
+	printf("\t请输入要查找的数：");
+	key = _();
+	
+	printf("\n\t无序查找：\n");
+	SequentialSearch(array, len, key);
+	
+	printf("\n\t有序查找（二分查找）：\n");
+	MergeSort(temp_1, temp_2, 0, len);
+	BinarySearch(temp_2, len, key);
+	
+	printf("\n\t无序查找与有序查找执行成功，请按任意键返回主菜单...");
+	return;
+}
